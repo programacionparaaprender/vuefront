@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Props</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+    .input-group.md-form.form-sm.form-2 input.green-border {
+        border: 1px solid #3BA877;
+    }
+    .input-group-text.green{
+        background-color: #3BA877;
+        color: #fff;
+        border: 1px solid #3BA877;
+    }
+    .btn-like{
+        border-color: #ef5777;
+        color: #ef5777;
+    }
+    .movie-like{
+        box-shadow: 0 0 0 4px  #ef5777;
+    }
+    .movieFav-wrapper{
+        background: #fff;
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+    }
+    .movieFav {
+        position: relative;
+        width: 100px;
+        height: 90px;
+        animation: heartbeat 2s forwards;
+        margin:0 auto
+    }
+    .movieFav:before,
+    .movieFav:after {
+        position: absolute;
+        content: "";
+        left: 50px;
+        top: 0;
+        width: 50px;
+        height: 80px;
+        background: rgb(246, 71, 71);
+        -moz-border-radius: 50px 50px 0 0;
+        border-radius: 50px 50px 0 0;
+        -webkit-transform: rotate(-45deg);
+        -moz-transform: rotate(-45deg);
+            -ms-transform: rotate(-45deg);
+            -o-transform: rotate(-45deg);
+                transform: rotate(-45deg);
+        -webkit-transform-origin: 0 100%;
+        -moz-transform-origin: 0 100%;
+            -ms-transform-origin: 0 100%;
+            -o-transform-origin: 0 100%;
+                transform-origin: 0 100%;
+    }
+    .movieFav:after {
+        left: 0;
+        -webkit-transform: rotate(45deg);
+        -moz-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            -o-transform: rotate(45deg);
+                transform: rotate(45deg);
+        -webkit-transform-origin: 100% 100%;
+        -moz-transform-origin: 100% 100%;
+            -ms-transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+                transform-origin :100% 100%;
+    }
+    @keyframes heartbeat
+    {
+        0%
+        {
+            transform: scale( .5 );
+            opacity: 1;
+        }
+        50% {
+            transform: scale( 1.2 );
+            opacity: 1;
+        }
+        100%
+        {
+            transform: scale( 1.5 );
+            opacity: 0;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <router-view></router-view>
+       
+            
+    </div>
+    <script src="https://kit.fontawesome.com/2190f1930b.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex@2.0.0"></script>
+    <!-- <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+     -->
+    <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+    
+    <!-- <script src="/components/movies/MovieFav.js"></script> -->
+    <!-- <script src="/components/movies/MovieComp.js"></script> -->
+    <!-- <script src="/components/movies/SearchComp.js"></script> -->
+    <!-- <script src="/components/movies/MovieDetails.js"></script> -->
+    <!-- <script src="/components/movies/index.js"></script> -->
+    <script>
+let MovieFav = {
+    template: `
+        <div v-show="show" class="movieFav-wrapper">
+            <div :id="'fav-'+ _uid" class="movieFav">
+                
+            </div>
+        </div>
+    `,
+    
+    props: {
+        show: {
+            type: Boolean,
+            default () {
+                return false
+            }
+        }
+    },
+    beforeCreate() {
+        console.log('Esto es antes de que se cree')
+    },
+    created() {
+         console.log('Ya creado')
+    },
+    beforeMount() {
+        console.log('Antes de montarse')
+    },
+    mounted() {
+        let vm = this
+        let $element = document.getElementById(`fav-${this._uid}`)
+        $element.addEventListener('animationend', function () {
+            vm.$emit('update:show', false)
+        })
+    },
+    beforeUpdate() {
+        
+    },
+    updated() {
+        
+    },
+    beforeDestroy() {
+        console.log('Antes de destruirse')
+    },
+    destroyed() {
+        console.log('Ya destruido')
+    },
+}
+
+let MovieComp = {
+    template: `
+        <div :id="id | formatId" class="card" :class="{'movie-like': isFav }">
+            <img :src="cover | coverURL" class="card-img-top">
+            <div class="card-body">
+                <h2 class="card-title">{{ title | uppercase }}</h2>
+                <p class="card-text">{{ synopsis | excertp }}</p>
+                <button class="btn" :class="btnStatus" @click="toggleLike">
+                    <span v-text="isFav ? 'Favorita' : 'Agregar a Favoritas'"></span>
+                    <i class="far fa-heart " :class="{
+                        'far': !isFav,
+                        'fas': isFav
+                    }"></i>
+                </button>
+                <router-link :to="{ name: 'pelicula', params: { id }}" class="btn btn-primary">Detalle</router-link>
+            </div>
+        </div>
+    `,
+    props: {
+        id: {
+            type: Number,
+            required: true,
+        },
+        title: {
+            type: String,
+            required: true,
+        },
+        synopsis: {
+            type: String,
+            default: 'No posee Sinopsis'
+        },
+        cover: {
+            type: String,
+            required: true,
+        },
+        like: {
+            type:Boolean,
+            required: true,
+            default () {
+                return false
+            }
+        }
+    },
+    filters: {
+        formatId (value) {
+            return `movieCard-${value}`
+        },
+        uppercase (value) {
+            return value.toUpperCase()
+        },
+        reverse (value) {
+            let word = value.split('')
+            return word.reverse().join('')
+        },
+        excertp (value) {
+            return value.substring(0, 100) + '...'
+        }
+    },
+    data () {
+        return {
+            className: {
+                'btn-like': true,
+                'btn-light': false,
+                myclass: true
+            },
+            user: 'Jesus Lopez'
+           
+        }
+    },
+    watch: {
+        like (newVal, oldVal) {
+            console.log(newVal, oldVal)
+        }
+    },
+    computed: {
+        btnStatus () {
+            return this.isFav ? 'btn-like' : 'btn-ligth'
+        },
+
+        isFav () {
+            let favMovies = this.$store.state.favMovies
+
+            let index = favMovies.findIndex(movie => movie.id === this.id)
+
+            return index >= 0
+        }
+    },
+    methods: {
+        toggleLike () {
+            // this.like = !this.like
+            let data = {
+                id: this.id,
+                like: !this.like
+            }
+            this.$emit('toggleLike', data)
+        }
+    },
+}
+    
+let SearchComp = {
+    template: `
+        <div>
+            <!-- Search form -->
+            <form @submit.prevent="search" class="form-inline md-form form-sm mt-0">
+                <div class="input-group md-form form-sm form-2 pl-0 w-100">
+                    <div v-show="query" class="input-group-append">
+                        <span @click="resetSearch" class="btn btn-danger">
+                            <i class="fas fa-times"></i>
+                        </span>
+                    </div>
+                    <input class="form-control my-0 py-1 green-border" 
+                        type="text" 
+                        placeholder="Buscar" 
+                        aria-label="Buscar"  v-model="query">
+                    <div class="input-group-append">
+                        <button class="input-group-text green">
+                            <i class="fas fa-search text-grey"
+                            aria-hidden="true">
+                            </i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    `,
+    data () {
+        return {
+            query: '',
+            page: 1,
+        }
+    },
+    methods: {
+        search () {
+            let URL = `${BASEURL}search/movie?api_key=${APIKEY}&language=es-MX&query=${this.query}&page=${this.page}`
+
+            fetch(URL)
+                .then(res => res.json())
+                .then(data  => {
+                    this.$emit('input', data)
+                })
+        },
+        setPage (page) {
+            this.page = page
+            this.search()
+        }, 
+        resetSearch () {
+            this.query = ''
+            this.page = 1
+            this.$emit('input', {})
+        }
+    },
+      
+}
+
+let MovieDetails = {
+    name: 'MovieDetails',
+    template: `<div v-if="Object.keys(movie).length">
+                   
+                    <div class="heroMovie text-white py-5" :style="{
+                        'background': 'linear-gradient(rgba(59, 168, 119, 0.45), rgba(59, 168, 119, 1)),url(https://image.tmdb.org/t/p/w1400_and_h450_face'+movie.backdrop_path+')',
+                        'background-size': 'cover'
+                    }">
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-12 col-md-4 col-lg-3">
+                                    <img :src="movie.poster_path | coverURL" class="w-100" />
+                                </div>
+                                <div class="col-12 col-md-8 col-lg-9">
+                                    <h2>Detalles: {{ movie.title }}</h2>
+
+                                    <p v-text="movie.overview">
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div v-for="movie in similar" :key="movie.id" class="col-12 col-md-6 col-lg-4 col-xl-3 py-3">
+                                <MovieComp 
+                                    :id="movie.id" 
+                                    :title="movie.title" 
+                                    :synopsis="movie.overview" 
+                                    :cover="movie.poster_path"
+                                    :like="movie.like"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>`,
+    data () {
+        return {
+            movie: {},
+            similar: []
+        }
+    },
+    components: {
+        MovieComp
+    },
+    watch: {
+        '$route.params.id' () {
+            this.getMovie()
+        }
+    },
+    methods: {
+        getSimilar () {
+            fetch(`${this.apiBaseURL}movie/${this.$route.params.id}/similar${this.apiConfig}`)
+                .then(res => res.json())
+                .then(({results}) =>{
+                    this.similar = results
+                })
+        },
+        getMovie () {
+            fetch(`${this.apiBaseURL}movie/${this.$route.params.id}${this.apiConfig}`)
+                .then(res => res.json())
+                .then(data =>{
+                    this.movie = data
+                    this.getSimilar()
+                })
+        }
+    },
+    mounted() {
+        this.getMovie()
+    },
+}
+
+const MovieApp= Vue.component('movie-app', {
+    template: `
+        <div class="container">
+            <h5>Bienvenido {{ user.name }} {{ user.lastName }}</h5>
+            <SearchComp ref="searchComp" v-model="searchMovies"/>
+            <div v-show="! Object.keys(searchMovies).length">
+                <h1>Peliculas App </h1>
+               <pre>{{ favMovies }}</pre>
+                <div class="row">
+                    <div class="col-12  col-md-6 col-lg-4 py-3" v-for="(movie, key) in movies" 
+                    :key="key">
+                        <MovieComp 
+                        :id="movie.id" 
+                        :title="movie.title" 
+                        :synopsis="movie.overview" 
+                        :cover="movie.poster_path"
+                        :like="movie.like"
+                        @toggleLike="onToggleLike"
+                        />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <button @click="setPage(n)" class="btn m-1" :class="{
+                        'btn-light': n != page,
+                        'btn-primary': n == page
+                    }" v-for="(n, index) in total_pages" :key="index">
+                        {{n}}
+                        
+                    </button>
+                </div>
+            </div>
+            <div v-show="Object.keys(searchMovies).length">
+                <h1>Resultados de busqueda</h1>
+                <div class="row">
+                    <div class="col-12  col-md-6 col-lg-4 py-3" v-for="(movie, key) in searchMovies.results" 
+                    :key="key"
+                    v-if="movie.poster_path">
+                        <MovieComp 
+                        :id="movie.id" 
+                        :title="movie.title" 
+                        :synopsis="movie.overview" 
+                        :cover="movie.poster_path"
+                        :like="movie.like"
+                        @toggleLike="onToggleLike"
+                        />
+                    </div>
+                </div>  
+                <div class="row">
+                    <button @click="$refs.searchComp.setPage(n)" class="btn m-1" :class="{
+                        'btn-light': n != searchMovies.page,
+                        'btn-primary': n == searchMovies.page
+                    }" v-for="(n, index) in searchMovies.total_pages" :key="index">
+                        {{n}}
+                        
+                    </button>
+                </div> 
+            </div>
+            
+            <MovieFav :show.sync="showFav"/>
+        </div>
+    `, 
+    data () {
+        return {
+           
+            add: 0,
+            user: {
+                name: 'Jesus',
+                lastName: 'Lopez'
+            },
+            oldUser: null,
+            movies: [
+               
+            ],
+            searchMovies: {
+
+            },
+            showFav: false,
+            page: 1,
+            total_pages: null
+        }
+    },
+    computed:{
+        ...Vuex.mapState(['favMovies','counter'])
+    },
+    watch: {
+        page () {
+            this.getPopularMovies()
+        }
+    },
+    components: {
+        MovieComp,
+        MovieFav,
+        SearchComp
+    },
+    methods: {
+        
+        onToggleLike (data) {
+            let movieLike = this.movies.find(movie => movie.id == data.id)
+            movieLike.like = data.like
+            // this.$store.commit('toggleFavMovie', movieLike)
+            this.storeFavorita(movieLike)
+            this.showFav = data.like
+        },
+        getPopularMovies () {
+            const URL = `${BASEURL}discover/movie?sort_by=popularity.desc&api_key=${APIKEY}&page=${this.page}`
+            fetch(URL)
+                .then(response => response.json())
+                .then(({results, page, total_pages}) => {
+                    console.log(page, total_pages)
+                    this.total_pages = total_pages
+                    this.movies = results.map(m => {
+                        m.like = false
+                        return m
+                    })
+                })
+        },
+        setPage (page) {
+            this.page = page
+            this.getPopularMovies() 
+        },
+        ...Vuex.mapMutations({
+            storeFavorita: 'toggleFavMovie'
+        })
+        // onHideFav (show) {
+        //     this.showFav = show
+        // }
+    },
+    mounted() {
+        let locationURL = new URL(window.location.href)
+        this.page = locationURL.searchParams.get('page') || 1
+    
+        this.getPopularMovies()
+    },
+})
+
+
+        const APIKEY = '29ed1d64cc3508c30f08131eb1860d99'
+        const BASEURL = 'https://api.themoviedb.org/3/'
+
+        Vue.mixin({
+            data () {
+                return {
+                    apiConfig: `?api_key=${APIKEY}&language=es-MX`,
+                    apiBaseURL: BASEURL
+                }
+            },
+            filters: {
+                coverURL (str) {
+                    return `https://image.tmdb.org/t/p/w185_and_h278_bestv2${str}`
+                }
+            } 
+        })
+        let test = {
+            template: `<h1>Test de Router Vue</h1>`
+        }
+        let routes = [
+            {
+                path: '/test',
+                name: 'test',
+                component: test,
+            },
+            {
+                path: '/pelicula/:id',
+                name: 'pelicula',
+                component: MovieDetails,
+            },
+            {
+               path: '/',
+               name: 'home',
+               component: MovieApp 
+            },
+        ]
+        
+        let router = new VueRouter({
+            mode: 'history',
+            routes
+        })
+
+        let store = new Vuex.Store({
+            state: {
+                favMovies: [],
+                counter: 10
+            },
+            
+            mutations: {
+                toggleFavMovie (state, movie) {
+                    let index = state.favMovies.findIndex(favMovie => favMovie.id == movie.id)
+                    
+                    if(index >= 0) {
+                        state.favMovies.splice(index, 1)
+                        return
+                    }
+
+                    state.favMovies.push(movie)
+                }
+            }
+        })
+
+        let vm = new Vue({
+            el: '#app',
+            router,
+            data () {
+                return {
+                    title: 'Compartiendo data a componentes Hijos [props]'
+                }
+            },
+            store
+        })
+    </script>
+</body>
+</html>
